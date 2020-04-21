@@ -20,6 +20,7 @@ var (
 	logSize                        int
 	logBackups                     int
 	logAge                         int
+	isCallerVisible                bool
 )
 
 func init() {
@@ -32,6 +33,7 @@ func init() {
 	flag.IntVar(&logAge, "log.age", 7,
 		"MaxAge is the maximum number of days to retain old log files based on the timestamp encoded in their filename.")
 	flag.StringVar(&logFileName, "log.filename", "default", "log file name")
+	flag.BoolVar(&isCallerVisible, "log.caller", true, "log the caller or not")
 
 }
 
@@ -46,9 +48,15 @@ func InitLogger() {
 	}
 	core := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(writeSyncer, zapcore.AddSync(os.Stdout)), realLogLevel)
 
-	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
-	sugarLogger = logger.Sugar()
-	sugarLoggerWithOnceCallerAdd = zap.New(core, zap.AddCaller()).Sugar()
+	if isCallerVisible {
+		logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+		sugarLogger = logger.Sugar()
+		sugarLoggerWithOnceCallerAdd = zap.New(core, zap.AddCaller()).Sugar()
+	} else {
+		sugarLogger = zap.New(core).Sugar()
+		sugarLoggerWithOnceCallerAdd = sugarLogger
+	}
+
 }
 
 func getEncoder() zapcore.Encoder {
