@@ -72,7 +72,7 @@ func getLogWriter() zapcore.WriteSyncer {
 	if len(os.Args) > 0 && logFileName == "default" {
 		exec := os.Args[0]
 
-		paths := strings.Split(exec, ".")
+		paths := strings.Split(exec, "/")
 		if len(paths) > 0 {
 			logFileName = paths[len(paths)-1]
 			logFileName += randomSuffix()

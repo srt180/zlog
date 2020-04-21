@@ -1,4 +1,4 @@
-module zlog
+module github.com/srt180/zlog
 
 go 1.14
 
